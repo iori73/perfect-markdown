@@ -146,7 +146,13 @@ function parseInlineElements(text) {
     }
     var codeMatch = remaining.match(/^`([^`]+?)`/);
     if (codeMatch) {
-      elements.push({ t: "code", x: codeMatch[1] });
+      var codeContent = codeMatch[1];
+      var codeColorMatch = codeContent.match(/^(#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}))$/);
+      if (codeColorMatch) {
+        elements.push({ t: "color", x: codeColorMatch[1], color: normalizeHexColor(codeColorMatch[1]) });
+      } else {
+        elements.push({ t: "code", x: codeContent });
+      }
       remaining = remaining.slice(codeMatch[0].length);
       continue;
     }
