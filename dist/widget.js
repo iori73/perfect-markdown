@@ -240,6 +240,9 @@ function PerfectMarkdown() {
   var mdState = useSyncedState("md", DEFAULT_MD);
   var md = mdState[0];
   var setMd = mdState[1];
+  var chromeState = useSyncedState("chrome", true);
+  var showChrome = chromeState[0];
+  var setShowChrome = chromeState[1];
   var wState = useSyncedState("w", 600);
   var w = wState[0];
   var setW = wState[1];
@@ -273,6 +276,7 @@ function PerfectMarkdown() {
   usePropertyMenu(
     [
       { itemType: "action", propertyName: "edit", tooltip: "Edit Markdown" },
+      { itemType: "action", propertyName: "toggleChrome", tooltip: showChrome ? "Hide toolbar" : "Show toolbar" },
       { itemType: "separator" },
       { itemType: "action", propertyName: "cycleWidth", tooltip: "\u2194 " + getWidthLabel() },
       {
@@ -310,6 +314,9 @@ function PerfectMarkdown() {
             resolve();
           };
         });
+      }
+      if (ev.propertyName === "toggleChrome") {
+        setShowChrome(!showChrome);
       }
       if (ev.propertyName === "cycleWidth") {
         cycleWidth();
@@ -749,7 +756,7 @@ function PerfectMarkdown() {
       cornerRadius: 8,
       effect: { type: "drop-shadow", color: { r: 0, g: 0, b: 0, a: 0.1 }, offset: { x: 0, y: 2 }, blur: 8 }
     },
-    h(
+    showChrome ? h(
       AutoLayout,
       {
         direction: "horizontal",
@@ -787,7 +794,7 @@ function PerfectMarkdown() {
         },
         h(Text, { fontSize: 12, fill: "#fff" }, "Edit")
       )
-    ),
+    ) : null,
     h(AutoLayout, {
       direction: "vertical",
       width: "fill-parent",
