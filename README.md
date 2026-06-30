@@ -1,4 +1,4 @@
-# Markdown Table Notes
+# Perfect Markdown
 
 Figma Widget for rendering Markdown with full support for tables, code blocks, and more.
 
@@ -40,7 +40,7 @@ npm run watch
 ## Usage
 
 1. In Figma, right-click on the canvas
-2. Select **Widgets > Markdown Table Notes**
+2. Select **Widgets > Perfect Markdown**
 3. The widget will appear with sample content
 4. Click **"Edit content"** in the toolbar to modify the Markdown
 5. Use the **width toggle** (↔️ icon) to cycle through size presets
@@ -107,6 +107,16 @@ Generated layers follow an HTML-like naming convention:
 - `PRE: code`
 - `HR`
 - `BLOCKQUOTE: Quote text...`
+
+## Contributing — text wrapping checklist
+
+When adding a new block kind or new inline element type:
+
+1. **Default path: render the entire block as one `<Text>` with `<Span>` children.** Use the `inlineToSpans(...)` helper at the top of `src/widget.tsx` and wrap the `<Text>` with `width: 'fill-parent'`. A single Text node wraps natively, so long CJK strings (no spaces) and mixed inline formatting both work.
+2. **Color-swatch fallback only when needed.** `inlineToSpans` returns `null` when the block contains a color swatch (an AutoLayout that can't live inside a Text). In that case, fall back to a horizontal `AutoLayout` with `wrap: true` and apply `withFill(props, isSingle)` to every Text child so the single-child case still wraps.
+3. **Manually verify with `examples/wrap-regression.md`** at widget widths 400 / 600 / 800 — every long CJK line must wrap inside the widget. Test both single-inline and mixed-inline (bold + italic + code) paragraphs.
+
+Why the Span path matters: Figma's `wrap: true` AutoLayout only breaks **between children**, never inside a single `Text` node. A horizontal AutoLayout of multiple `Text` children silently overflows when one child becomes long — a bug that hit paragraphs, headings, list items and checkboxes on CJK input.
 
 ## License
 
